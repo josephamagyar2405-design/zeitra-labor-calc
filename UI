@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>value calc — zeitra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,480;9..144,560&family=Instrument+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --base:#0a0a10;--navy:#141421;--raised:#1a1a27;--raised-2:#202030;
+  --gold:#C8962E;--amber:#E2B057;--bronze:#7A5618;
+  --cream:#F3EBDA;--body:#B8B0A2;--muted:#7A7468;
+  --green:#4d9970;--red:#c45c4a;--blue:#4a7fc1;--purple:#7b6cc4;
+  --line:rgba(243,235,218,.07);--line-gold:rgba(200,150,46,.22);
+  --gold-pale:rgba(200,150,46,.06);
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Instrument Sans',-apple-system,sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--base);color:var(--body);font-family:var(--font-body);
+  font-size:14px;line-height:1.6;min-height:100vh;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(200,150,46,.3);color:var(--cream)}
+
+.ambient{position:fixed;inset:0;z-index:-3;background:
+  radial-gradient(820px 520px at 72% 8%, rgba(200,150,46,.10), transparent 60%),
+  radial-gradient(820px 580px at 8% 36%, rgba(43,49,92,.22), transparent 65%),
+  radial-gradient(720px 520px at 88% 78%, rgba(138,100,32,.10), transparent 60%),
+  radial-gradient(700px 500px at 22% 100%, rgba(34,38,68,.25), transparent 65%),
+  linear-gradient(180deg,#090910 0%,#080810 38%,#09090f 70%,#070710 100%);}
+.ambient::after{content:"";position:absolute;inset:0;
+  background-image:url("https://zeitra.ai/noise.png");background-size:280px;
+  opacity:.05;mix-blend-mode:overlay;pointer-events:none}
+
+.circuit{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.18;width:100%;height:100%}
+.circuit .pl{stroke:var(--amber);stroke-width:2.8;stroke-opacity:1;
+  stroke-dasharray:150 1800;stroke-dashoffset:2480;
+  animation:pulseTravel var(--dur,10s) linear var(--del,0s) infinite;
+  filter:drop-shadow(0 0 10px rgba(226,176,87,.8))}
+@keyframes pulseTravel{to{stroke-dashoffset:0}}
+
+.veil{position:fixed;inset:0;z-index:200;pointer-events:none;
+  background:linear-gradient(120deg,#0c0c16,#141421);
+  transform:translateY(0);animation:veilOut .62s var(--ease) .12s forwards}
+.veil::before{content:"";position:absolute;top:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  filter:drop-shadow(0 0 6px rgba(200,150,46,.5))}
+@keyframes veilOut{from{transform:translateY(0)}to{transform:translateY(-101%)}}
+
+.shell{max-width:720px;margin:0 auto;padding:0 24px 80px}
+
+/* HERO */
+.hero-header{display:flex;flex-direction:column;align-items:center;
+  padding:44px 0 36px;margin-bottom:36px;border-bottom:1px solid var(--line);position:relative}
+.hero-header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:200px;height:1px;background:linear-gradient(90deg,transparent,rgba(200,150,46,.4),transparent)}
+.hero-logo{height:48px;width:auto;opacity:.94;margin-bottom:16px}
+.hero-meta{display:flex;align-items:center;gap:16px}
+.page-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.38em;
+  text-transform:uppercase;color:var(--gold)}
+.divider-v{width:1px;height:14px;background:var(--line-gold)}
+.page-sub{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+
+.section-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:14px;
+  display:flex;align-items:center;gap:14px}
+.section-label::before{content:'';width:16px;height:1px;background:var(--gold);flex:none}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line-gold)}
+
+/* FORM CARD */
+.form-card{background:linear-gradient(160deg,rgba(32,32,48,.65),rgba(20,20,33,.5));
+  border:1px solid var(--line);border-radius:18px;padding:28px 28px 24px;
+  margin-bottom:28px;position:relative;overflow:hidden}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line-gold),transparent)}
+
+.field-group{margin-bottom:20px}
+.field-group:last-child{margin-bottom:0}
+.field-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+.field-hint{font-size:11px;color:var(--muted);opacity:.7;margin-top:4px;font-style:italic}
+
+input[type=text],input[type=number],select,textarea{
+  width:100%;background:rgba(10,10,16,.6);border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px;color:var(--cream);
+  font-family:var(--font-body);font-size:14px;
+  transition:border-color .2s var(--ease);outline:none;appearance:none}
+input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(200,150,46,.45)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7468' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+select option{background:#141421;color:var(--cream)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* COMPLEXITY */
+.complexity-row{display:flex;gap:8px}
+.cx-btn{flex:1;padding:10px 8px;border:1px solid var(--line);border-radius:10px;
+  background:transparent;color:var(--muted);font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  transition:all .2s var(--ease);text-align:center}
+.cx-btn:hover{border-color:var(--line-gold);color:var(--body)}
+.cx-btn.selected{background:var(--gold-pale);border-color:var(--line-gold);color:var(--gold)}
+.cx-btn .cx-mult{display:block;font-family:var(--font-display);font-size:22px;
+  font-weight:480;color:var(--cream);margin-bottom:2px;
+  font-variation-settings:"opsz" 72;line-height:1}
+.cx-btn.selected .cx-mult{color:var(--gold)}
+.cx-desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+/* RUN BUTTON */
+.run-btn{width:100%;padding:14px;background:linear-gradient(135deg,rgba(200,150,46,.18),rgba(200,150,46,.08));
+  border:1px solid var(--line-gold);border-radius:12px;
+  color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:.28em;
+  text-transform:uppercase;cursor:pointer;
+  transition:all .25s var(--ease);margin-top:6px}
+.run-btn:hover{background:linear-gradient(135deg,rgba(200,150,46,.28),rgba(200,150,46,.14));
+  transform:translateY(-1px)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* STATUS */
+.status-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;
+  border-radius:10px;margin-bottom:20px;font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.1em;display:none}
+.status-bar.show{display:flex}
+.status-bar.loading{background:rgba(226,176,87,.07);border:1px solid rgba(226,176,87,.2);color:var(--amber)}
+.status-bar.error{background:rgba(196,92,74,.07);border:1px solid rgba(196,92,74,.2);color:var(--red)}
+.status-bar.success{background:rgba(77,153,112,.07);border:1px solid rgba(77,153,112,.2);color:var(--green)}
+.s-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:currentColor}
+.s-dot.pulse{animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* WAGE RESULT */
+.wage-found{background:linear-gradient(160deg,rgba(77,153,112,.08),rgba(20,20,33,.4));
+  border:1px solid rgba(77,153,112,.2);border-radius:14px;
+  padding:18px 22px;margin-bottom:20px;display:none}
+.wage-found.show{display:block}
+.wage-found-top{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.wage-number{font-family:var(--font-display);font-size:48px;font-weight:480;
+  line-height:1;color:var(--green);font-variation-settings:"opsz" 72}
+.wage-unit{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted)}
+.wage-role-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.wage-source{font-size:11px;color:var(--muted);margin-top:4px;opacity:.7}
+
+/* RESULTS */
+.results-block{display:none}
+.results-block.show{display:block}
+
+.results-hero{background:linear-gradient(160deg,rgba(200,150,46,.10),rgba(20,20,33,.55));
+  border:1px solid var(--line-gold);border-radius:18px;padding:28px 28px 24px;
+  margin-bottom:16px;position:relative;overflow:hidden}
+.results-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,150,46,.5),transparent)}
+
+.results-headline{font-family:var(--font-mono);font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--bronze);margin-bottom:16px}
+
+.price-display{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.price-number{font-family:var(--font-display);font-size:64px;font-weight:480;
+  line-height:1;letter-spacing:-.02em;color:var(--gold);
+  font-variation-settings:"opsz" 72}
+.price-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--bronze)}
+.price-sub{font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  letter-spacing:.08em;margin-bottom:20px}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.r-card{background:rgba(10,10,16,.5);border:1px solid var(--line);
+  border-radius:12px;padding:14px 16px}
+.r-card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.r-card-num{font-family:var(--font-display);font-size:28px;font-weight:480;
+  line-height:1;font-variation-settings:"opsz" 72}
+.r-card-num.green{color:var(--green)}
+.r-card-num.blue{color:var(--blue)}
+.r-card-num.cream{color:var(--cream)}
+.r-card-sub{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:4px}
+
+/* BREAKDOWN */
+.breakdown-block{background:linear-gradient(160deg,rgba(32,32,48,.5),rgba(20,20,33,.4));
+  border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:16px}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.breakdown-row:last-child{border-bottom:none;padding-bottom:0}
+.breakdown-row:first-child{padding-top:0}
+.breakdown-key{color:var(--muted);font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase}
+.breakdown-val{color:var(--cream);font-family:var(--font-mono);font-size:12px}
+.breakdown-val.gold{color:var(--gold)}
+.breakdown-val.green{color:var(--green)}
+
+/* VALUE PROP */
+.value-prop{background:linear-gradient(160deg,rgba(74,127,193,.07),rgba(20,20,33,.4));
+  border:1px solid rgba(74,127,193,.18);border-radius:14px;
+  padding:18px 22px;margin-bottom:28px}
+.vp-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.vp-item{display:flex;gap:10px;margin-bottom:8px;font-size:13px;color:var(--body)}
+.vp-item:last-child{margin-bottom:0}
+.vp-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);
+  flex-shrink:0;margin-top:7px}
+
+/* ERROR DETAIL */
+.error-detail{background:rgba(196,92,74,.05);border:1px solid rgba(196,92,74,.15);
+  border-radius:10px;padding:14px 18px;margin-top:12px;
+  font-family:var(--font-mono);font-size:10px;color:var(--red);
+  letter-spacing:.08em;line-height:1.7;display:none}
+.error-detail.show{display:block}
+
+footer{display:flex;justify-content:space-between;align-items:center;
+  padding-top:20px;border-top:1px solid var(--line)}
+.footer-note{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--muted)}
+
+.rv{opacity:0;transform:translateY(18px)}
+@media(max-width:580px){
+  .two-col,.three-col{grid-template-columns:1fr}
+  .results-grid{grid-template-columns:1fr 1fr}
+  .complexity-row{flex-direction:column}
+  .shell{padding:0 16px 56px}
+  .price-number{font-size:48px}
+}
+@media(prefers-reduced-motion:reduce){
+  .veil{display:none!important}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .rv{opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="veil" aria-hidden="true"></div>
+<div class="ambient"></div>
+
+<svg class="circuit" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs><pattern id="trace" width="320" height="320" patternUnits="userSpaceOnUse">
+    <path d="M20 40h120v80h90M60 300V180h150M260 20v110h-70" fill="none" stroke="#E2B057" stroke-width="2.4"/>
+    <circle cx="140" cy="40" r="4.5" fill="#E2B057"/>
+    <circle cx="230" cy="120" r="4.5" fill="#E2B057"/>
+    <circle cx="60"  cy="300" r="4.5" fill="#E2B057"/>
+    <circle cx="190" cy="130" r="4.5" fill="#E2B057"/>
+  </pattern></defs>
+  <rect width="100%" height="100%" fill="url(#trace)"/>
+  <g fill="none" stroke-linecap="round">
+    <path class="pl" style="--dur:9s;--del:0s"    d="M-60 140 H420 V360 H840 V230 H1500"/>
+    <path class="pl" style="--dur:12s;--del:2.5s" d="M-60 760 H300 V520 H780 V680 H1500"/>
+    <path class="pl" style="--dur:10s;--del:5s"   d="M240 960 V610 H580 V390 H1120 V540 H1500"/>
+  </g>
+</svg>
+
+<div class="shell">
+
+  <div class="hero-header rv" data-d=".02">
+    <img src="https://zeitra.ai/logo.png" alt="Zeitra" class="hero-logo">
+    <div class="hero-meta">
+      <span class="page-title">Value Calc</span>
+      <div class="divider-v"></div>
+      <span class="page-sub">Internal — Discovery Tool</span>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="section-label rv" data-d=".06">the task being replaced</div>
+  <div class="form-card rv" data-d=".08">
+
+    <div class="two-col" style="margin-bottom:20px">
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label" for="task-desc">task description</label>
+        <input type="text" id="task-desc" placeholder="e.g. log service call, update CRM, send review request">
+        <div class="field-hint">what the employee/owner is doing manually right now</div>
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label" for="role-title">role doing it</label>
+        <input type="text" id="role-title" placeholder="e.g. office administrator">
+        <div class="field-hint">what you'd search on a job board</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-bottom:20px">
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label" for="location-type">work location</label>
+        <select id="location-type" onchange="toggleLocation()">
+          <option value="city">specific city</option>
+          <option value="remote">remote / national avg</option>
+        </select>
+      </div>
+      <div class="field-group" style="margin-bottom:0" id="city-field">
+        <label class="field-label" for="city-input">city, state</label>
+        <input type="text" id="city-input" placeholder="e.g. Dallas, TX">
+      </div>
+    </div>
+
+    <div class="three-col" style="margin-bottom:20px">
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label" for="time-per">minutes per task</label>
+        <input type="number" id="time-per" placeholder="8" min="1">
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label" for="tasks-per-day">tasks per day</label>
+        <input type="number" id="tasks-per-day" placeholder="15" min="1">
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label" for="days-per-month">working days/month</label>
+        <input type="number" id="days-per-month" placeholder="22" min="1" max="31">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label rv" data-d=".10">build complexity</div>
+  <div class="form-card rv" data-d=".12">
+    <div class="complexity-row" id="cx-row">
+      <button class="cx-btn selected" onclick="setCx(this,'simple',1)" data-mult="1">
+        <span class="cx-mult">1×</span>
+        simple
+      </button>
+      <button class="cx-btn" onclick="setCx(this,'medium',1.5)" data-mult="1.5">
+        <span class="cx-mult">1.5×</span>
+        medium
+      </button>
+      <button class="cx-btn" onclick="setCx(this,'complex',2)" data-mult="2">
+        <span class="cx-mult">2×</span>
+        complex
+      </button>
+    </div>
+    <div class="cx-desc" id="cx-desc">Linear trigger, 1-2 integrations, minimal branching logic. Abhinandan can turn this around in a day or two.</div>
+  </div>
+
+  <div class="rv" data-d=".14">
+    <div class="status-bar" id="status-bar">
+      <div class="s-dot pulse" id="s-dot"></div>
+      <span id="status-msg">fetching wage data...</span>
+    </div>
+    <div class="error-detail" id="error-detail"></div>
+    <button class="run-btn" id="run-btn" onclick="runCalc()">— calculate value —</button>
+  </div>
+
+  <!-- WAGE FOUND -->
+  <div class="wage-found rv" id="wage-found" data-d=".02">
+    <div class="wage-found-top">
+      <div class="wage-number" id="wf-number">$0</div>
+      <div class="wage-unit">/hr</div>
+    </div>
+    <div class="wage-role-label" id="wf-role">—</div>
+    <div class="wage-source" id="wf-source">—</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-block rv" id="results-block" data-d=".04">
+
+    <div class="results-hero">
+      <div class="results-headline">quote range</div>
+      <div class="price-display">
+        <div class="price-number" id="r-build-price">—</div>
+        <div class="price-label">build</div>
+      </div>
+      <div class="price-sub" id="r-build-sub">one-time — based on 4× monthly savings × complexity</div>
+      <div class="results-grid">
+        <div class="r-card">
+          <div class="r-card-label">monthly savings</div>
+          <div class="r-card-num green" id="r-monthly">—</div>
+          <div class="r-card-sub" id="r-monthly-sub">—</div>
+        </div>
+        <div class="r-card">
+          <div class="r-card-label">care / month</div>
+          <div class="r-card-num blue" id="r-care">—</div>
+          <div class="r-card-sub">25% of savings · $500 floor</div>
+        </div>
+        <div class="r-card">
+          <div class="r-card-label">client payback</div>
+          <div class="r-card-num cream" id="r-payback">—</div>
+          <div class="r-card-sub">months to break even</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="breakdown-block">
+      <div class="breakdown-row">
+        <div class="breakdown-key">hourly wage</div>
+        <div class="breakdown-val" id="b-wage">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-key">hours saved / month</div>
+        <div class="breakdown-val" id="b-hours">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-key">raw monthly savings</div>
+        <div class="breakdown-val green" id="b-raw-savings">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-key">base price (4× savings)</div>
+        <div class="breakdown-val" id="b-base">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-key">complexity multiplier</div>
+        <div class="breakdown-val" id="b-cx">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-key">final build price</div>
+        <div class="breakdown-val gold" id="b-final">—</div>
+      </div>
+    </div>
+
+    <div class="value-prop">
+      <div class="vp-title">what you're actually selling</div>
+      <div class="vp-item"><div class="vp-dot"></div><span id="vp-hours">Frees up <b>—</b> hours a month</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span>No benefits, PTO, sick days, or training costs - it just runs.</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span>Scales with volume automatically. More jobs doesn't mean another hire.</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span>No one has to babysit it. Their energy goes back into the actual business.</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span id="vp-payback">Pays for itself in <b>—</b> months, then it's pure savings every month after.</span></div>
+    </div>
+
+  </div>
+
+  <footer class="rv" data-d=".28">
+    <span class="footer-note">zeitra — internal discovery tool</span>
+    <span class="footer-note" id="calc-timestamp"></span>
+  </footer>
+
+</div>
+
+<script>
+document.documentElement.classList.remove('no-js');
+
+// Animate in
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduced){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      io.unobserve(e.target);
+      var delay = parseFloat(e.target.dataset.d||0)*1000+260;
+      setTimeout(function(){
+        e.target.style.transition='opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)';
+        e.target.style.opacity='1';
+        e.target.style.transform='translateY(0)';
+      }, delay);
+    });
+  },{threshold:0.06});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+} else {
+  document.querySelectorAll('.rv').forEach(function(el){
+    el.style.opacity='1'; el.style.transform='none';
+  });
+}
+
+// State
+var cxMult = 1;
+var cxLabel = 'simple';
+
+var cxDescs = {
+  simple: 'Linear trigger, 1-2 integrations, minimal branching logic. Abhinandan can turn this around in a day or two.',
+  medium: 'Multiple integrations, conditional logic, possibly multi-step. A few days of build time.',
+  complex: 'Multi-system architecture, custom logic, error handling, edge cases. A proper build - price reflects that.'
+};
+
+function setCx(btn, label, mult){
+  document.querySelectorAll('.cx-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  cxMult = mult;
+  cxLabel = label;
+  document.getElementById('cx-desc').textContent = cxDescs[label];
+}
+
+function toggleLocation(){
+  var t = document.getElementById('location-type').value;
+  document.getElementById('city-field').style.display = t === 'remote' ? 'none' : '';
+}
+
+function fmt(n){ return '$'+Math.round(n).toLocaleString(); }
+function fmtDec(n){ return '$'+n.toFixed(2); }
+
+function showStatus(type, msg){
+  var bar = document.getElementById('status-bar');
+  var dot = document.getElementById('s-dot');
+  var txt = document.getElementById('status-msg');
+  bar.className = 'status-bar show '+type;
+  dot.className = 's-dot' + (type==='loading' ? ' pulse' : '');
+  txt.textContent = msg;
+}
+function hideStatus(){ document.getElementById('status-bar').className = 'status-bar'; }
+
+function showError(detail){
+  var el = document.getElementById('error-detail');
+  el.textContent = detail;
+  el.classList.add('show');
+}
+function hideError(){ document.getElementById('error-detail').classList.remove('show'); }
+
+// BLS series lookup - OES wage data
+// We use Claude AI (Anthropic API) to find the right BLS series and wage
+// since BLS direct access may be restricted; fallback to Payscale scrape pattern
+async function fetchWage(role, location, locationType){
+  // Use Claude to look up real wage data via web search
+  var prompt = `You are a labor data lookup assistant. Return ONLY a JSON object, no markdown, no explanation.
+
+Task: Find the median hourly wage for the following role in the following location using real current market data (BLS OES, Payscale, or similar authoritative source).
+
+Role: ${role}
+Location: ${locationType === 'remote' ? 'United States national average' : location}
+
+Return this exact JSON structure:
+{
+  "hourly_wage": 22.50,
+  "role_normalized": "Office Administrator",
+  "location_used": "Dallas, TX",
+  "source": "BLS OES May 2024",
+  "confidence": "high"
+}
+
+Rules:
+- hourly_wage must be a number (not a string)
+- Use the most specific data available for that location
+- If city not found, use state average
+- If role title is ambiguous, normalize to the closest standard BLS occupation title
+- confidence: "high" if exact match found, "medium" if approximated`;
+
+  var res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if(!res.ok) throw new Error('API error '+res.status);
+  var data = await res.json();
+
+  // Extract text from response
+  var text = '';
+  for(var i=0;i<data.content.length;i++){
+    if(data.content[i].type === 'text') text += data.content[i].text;
+  }
+
+  // Strip any markdown fences
+  text = text.replace(/```json|```/g,'').trim();
+
+  // Find JSON object in text
+  var match = text.match(/\{[\s\S]*\}/);
+  if(!match) throw new Error('No JSON in response: '+text.substring(0,200));
+
+  return JSON.parse(match[0]);
+}
+
+async function runCalc(){
+  hideError();
+
+  var role = document.getElementById('role-title').value.trim();
+  var task = document.getElementById('task-desc').value.trim();
+  var locType = document.getElementById('location-type').value;
+  var city = document.getElementById('city-input').value.trim();
+  var minPer = parseFloat(document.getElementById('time-per').value);
+  var tasksDay = parseFloat(document.getElementById('tasks-per-day').value);
+  var daysMonth = parseFloat(document.getElementById('days-per-month').value) || 22;
+
+  if(!role){ showStatus('error','enter the role title'); return; }
+  if(!task){ showStatus('error','describe the task being replaced'); return; }
+  if(!minPer || minPer <= 0){ showStatus('error','enter minutes per task'); return; }
+  if(!tasksDay || tasksDay <= 0){ showStatus('error','enter tasks per day'); return; }
+  if(locType === 'city' && !city){ showStatus('error','enter a city or switch to remote'); return; }
+
+  var btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  document.getElementById('wage-found').classList.remove('show');
+  document.getElementById('results-block').classList.remove('show');
+
+  showStatus('loading','fetching wage data for '+role+(locType==='city'?' in '+city:'')+'...');
+
+  try{
+    var wageData = await fetchWage(role, city, locType);
+
+    hideStatus();
+
+    var hourly = wageData.hourly_wage;
+
+    // Show wage found
+    document.getElementById('wf-number').textContent = '$'+hourly.toFixed(2);
+    document.getElementById('wf-role').textContent = wageData.role_normalized + (wageData.location_used ? ' — '+wageData.location_used : '');
+    document.getElementById('wf-source').textContent = 'source: '+wageData.source+' (confidence: '+wageData.confidence+')';
+    revealEl('wage-found');
+
+    // Math
+    var hoursMonth = (minPer / 60) * tasksDay * daysMonth;
+    var monthlySavings = hoursMonth * hourly;
+    var basePrice = monthlySavings * 4;
+    var buildPrice = basePrice * cxMult;
+    var careRaw = monthlySavings * 0.25;
+    var care = Math.max(careRaw, 500);
+    var payback = buildPrice / monthlySavings;
+
+    // Populate results
+    document.getElementById('r-build-price').textContent = fmt(buildPrice);
+    document.getElementById('r-build-sub').textContent = '4× monthly savings × '+cxMult+'× ('+cxLabel+')';
+    document.getElementById('r-monthly').textContent = fmt(monthlySavings);
+    document.getElementById('r-monthly-sub').textContent = Math.round(hoursMonth)+' hrs × '+fmtDec(hourly)+'/hr';
+    document.getElementById('r-care').textContent = fmt(care);
+    document.getElementById('r-payback').textContent = payback.toFixed(1);
+
+    document.getElementById('b-wage').textContent = fmtDec(hourly)+'/hr';
+    document.getElementById('b-hours').textContent = hoursMonth.toFixed(1)+' hrs/month';
+    document.getElementById('b-raw-savings').textContent = fmt(monthlySavings)+'/month';
+    document.getElementById('b-base').textContent = fmt(basePrice);
+    document.getElementById('b-cx').textContent = cxMult+'× ('+cxLabel+')';
+    document.getElementById('b-final').textContent = fmt(buildPrice);
+
+    document.getElementById('vp-hours').innerHTML = 'Frees up <b>'+Math.round(hoursMonth)+' hours a month</b> that were going to manual work.';
+    document.getElementById('vp-payback').innerHTML = 'Pays for itself in <b>'+payback.toFixed(1)+' months</b>, then it\'s pure savings every month after.';
+
+    document.getElementById('calc-timestamp').textContent = 'calculated '+new Date().toLocaleTimeString();
+
+    revealEl('results-block');
+
+  } catch(err){
+    showStatus('error','wage lookup failed');
+    showError('Error: '+err.message+'\n\nCheck the role title and try again. If this keeps happening, the API may be rate limited.');
+  }
+
+  btn.disabled = false;
+}
+
+function revealEl(id){
+  var el = document.getElementById(id);
+  el.classList.add('show');
+  if(!reduced){
+    el.style.opacity='0'; el.style.transform='translateY(18px)';
+    requestAnimationFrame(function(){
+      el.style.transition='opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)';
+      el.style.opacity='1'; el.style.transform='translateY(0)';
+    });
+  }
+  setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+</script>
+</body>
+</html>
