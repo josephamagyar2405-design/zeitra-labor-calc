@@ -320,20 +320,20 @@ footer{display:flex;justify-content:space-between;align-items:center;
   <div class="section-label rv" data-d=".10">build complexity</div>
   <div class="form-card rv" data-d=".12">
     <div class="complexity-row" id="cx-row">
-      <button class="cx-btn selected" onclick="setCx(this,'simple',1)" data-mult="1">
+      <button class="cx-btn selected" onclick="setCx(this,'standard',0)" data-premium="0">
         <span class="cx-mult">1×</span>
-        simple
+        standard
       </button>
-      <button class="cx-btn" onclick="setCx(this,'medium',1.5)" data-mult="1.5">
+      <button class="cx-btn" onclick="setCx(this,'moderate',0.25)" data-premium="0.25">
+        <span class="cx-mult">1.25×</span>
+        moderate
+      </button>
+      <button class="cx-btn" onclick="setCx(this,'complex',0.5)" data-premium="0.5">
         <span class="cx-mult">1.5×</span>
-        medium
-      </button>
-      <button class="cx-btn" onclick="setCx(this,'complex',2)" data-mult="2">
-        <span class="cx-mult">2×</span>
         complex
       </button>
     </div>
-    <div class="cx-desc" id="cx-desc">Linear trigger, 1-2 integrations, minimal branching logic. Abhinandan can turn this around in a day or two.</div>
+    <div class="cx-desc" id="cx-desc">A clear task with a trigger and one or two tools. Straight build, no premium added on top.</div>
   </div>
 
   <div class="rv" data-d=".14">
@@ -359,12 +359,12 @@ footer{display:flex;justify-content:space-between;align-items:center;
   <div class="results-block rv" id="results-block" data-d=".04">
 
     <div class="results-hero">
-      <div class="results-headline">quote range</div>
+      <div class="results-headline">quote</div>
       <div class="price-display">
         <div class="price-number" id="r-build-price">—</div>
         <div class="price-label">build</div>
       </div>
-      <div class="price-sub" id="r-build-sub">one-time — based on 4× monthly savings × complexity</div>
+      <div class="price-sub" id="r-build-sub">one-time, split into a deposit and a final payment</div>
       <div class="results-grid">
         <div class="r-card">
           <div class="r-card-label">monthly savings</div>
@@ -374,7 +374,7 @@ footer{display:flex;justify-content:space-between;align-items:center;
         <div class="r-card">
           <div class="r-card-label">care / month</div>
           <div class="r-card-num blue" id="r-care">—</div>
-          <div class="r-card-sub">25% of savings · $500 floor</div>
+          <div class="r-card-sub">15% of monthly savings · $100 floor</div>
         </div>
         <div class="r-card">
           <div class="r-card-label">client payback</div>
@@ -394,29 +394,33 @@ footer{display:flex;justify-content:space-between;align-items:center;
         <div class="breakdown-val" id="b-hours">—</div>
       </div>
       <div class="breakdown-row">
-        <div class="breakdown-key">raw monthly savings</div>
+        <div class="breakdown-key">monthly savings</div>
         <div class="breakdown-val green" id="b-raw-savings">—</div>
       </div>
       <div class="breakdown-row">
-        <div class="breakdown-key">base price (4× savings)</div>
+        <div class="breakdown-key">base price (2× savings)</div>
         <div class="breakdown-val" id="b-base">—</div>
       </div>
       <div class="breakdown-row">
-        <div class="breakdown-key">complexity multiplier</div>
-        <div class="breakdown-val" id="b-cx">—</div>
+        <div class="breakdown-key">complexity premium</div>
+        <div class="breakdown-val" id="b-premium">—</div>
       </div>
       <div class="breakdown-row">
-        <div class="breakdown-key">final build price</div>
+        <div class="breakdown-key">build price</div>
         <div class="breakdown-val gold" id="b-final">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-key">deposit / final</div>
+        <div class="breakdown-val" id="b-split">—</div>
       </div>
     </div>
 
     <div class="value-prop">
       <div class="vp-title">what you're actually selling</div>
-      <div class="vp-item"><div class="vp-dot"></div><span id="vp-hours">Frees up <b>—</b> hours a month</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span id="vp-hours">Frees up <b>—</b> hours a month that were going to repetitive, robotic work.</span></div>
       <div class="vp-item"><div class="vp-dot"></div><span>No benefits, PTO, sick days, or training costs - it just runs.</span></div>
-      <div class="vp-item"><div class="vp-dot"></div><span>Scales with volume automatically. More jobs doesn't mean another hire.</span></div>
-      <div class="vp-item"><div class="vp-dot"></div><span>No one has to babysit it. Their energy goes back into the actual business.</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span>Scales with volume automatically. Busier months don't cost more to run.</span></div>
+      <div class="vp-item"><div class="vp-dot"></div><span>No one has to babysit it. Their energy goes back into the work that actually needs a person.</span></div>
       <div class="vp-item"><div class="vp-dot"></div><span id="vp-payback">Pays for itself in <b>—</b> months, then it's pure savings every month after.</span></div>
     </div>
 
@@ -455,19 +459,19 @@ if(!reduced){
 }
 
 // State
-var cxMult = 1;
-var cxLabel = 'simple';
+var cxPremium = 0;
+var cxLabel = 'standard';
 
 var cxDescs = {
-  simple: 'Linear trigger, 1-2 integrations, minimal branching logic. Abhinandan can turn this around in a day or two.',
-  medium: 'Multiple integrations, conditional logic, possibly multi-step. A few days of build time.',
-  complex: 'Multi-system architecture, custom logic, error handling, edge cases. A proper build - price reflects that.'
+  standard: 'A clear task with a trigger and one or two tools. Straight build, no premium added on top.',
+  moderate: 'Multiple integrations or conditional logic. Adds 25% of monthly savings to the base price.',
+  complex: 'Multi-system, custom logic, error handling and edge cases. Adds 50% of monthly savings to the base price.'
 };
 
-function setCx(btn, label, mult){
+function setCx(btn, label, premium){
   document.querySelectorAll('.cx-btn').forEach(function(b){ b.classList.remove('selected'); });
   btn.classList.add('selected');
-  cxMult = mult;
+  cxPremium = premium;
   cxLabel = label;
   document.getElementById('cx-desc').textContent = cxDescs[label];
 }
@@ -497,62 +501,23 @@ function showError(detail){
 }
 function hideError(){ document.getElementById('error-detail').classList.remove('show'); }
 
-// BLS series lookup - OES wage data
-// We use Claude AI (Anthropic API) to find the right BLS series and wage
-// since BLS direct access may be restricted; fallback to Payscale scrape pattern
-async function fetchWage(role, location, locationType){
-  // Use Claude to look up real wage data via web search
-  var prompt = `You are a labor data lookup assistant. Return ONLY a JSON object, no markdown, no explanation.
+var WAGE_LOOKUP_URL = 'https://n8n-50yc.srv1306892.hstgr.cloud/webhook/wage-lookup';
 
-Task: Find the median hourly wage for the following role in the following location using real current market data (BLS OES, Payscale, or similar authoritative source).
-
-Role: ${role}
-Location: ${locationType === 'remote' ? 'United States national average' : location}
-
-Return this exact JSON structure:
-{
-  "hourly_wage": 22.50,
-  "role_normalized": "Office Administrator",
-  "location_used": "Dallas, TX",
-  "source": "BLS OES May 2024",
-  "confidence": "high"
-}
-
-Rules:
-- hourly_wage must be a number (not a string)
-- Use the most specific data available for that location
-- If city not found, use state average
-- If role title is ambiguous, normalize to the closest standard BLS occupation title
-- confidence: "high" if exact match found, "medium" if approximated`;
-
-  var res = await fetch('https://api.anthropic.com/v1/messages', {
+// Pricing now lives entirely in the n8n workflow (Zeitra — Wage Lookup API, oCFgd4e2NwR6OUyI):
+// looks up the wage via DeepSeek/OpenRouter, then calculates build price as
+// (monthly savings x 2) + complexity premium (0/25/50% of monthly savings), $250 floor,
+// and Continuum Care as 15% of monthly savings with a $100/mo floor.
+async function fetchPricing(payload){
+  var res = await fetch(WAGE_LOOKUP_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body: JSON.stringify(payload)
   });
 
-  if(!res.ok) throw new Error('API error '+res.status);
+  if(!res.ok) throw new Error('webhook error '+res.status);
   var data = await res.json();
-
-  // Extract text from response
-  var text = '';
-  for(var i=0;i<data.content.length;i++){
-    if(data.content[i].type === 'text') text += data.content[i].text;
-  }
-
-  // Strip any markdown fences
-  text = text.replace(/```json|```/g,'').trim();
-
-  // Find JSON object in text
-  var match = text.match(/\{[\s\S]*\}/);
-  if(!match) throw new Error('No JSON in response: '+text.substring(0,200));
-
-  return JSON.parse(match[0]);
+  if(data.error) throw new Error(data.message || 'lookup failed');
+  return data;
 }
 
 async function runCalc(){
@@ -580,44 +545,49 @@ async function runCalc(){
   showStatus('loading','fetching wage data for '+role+(locType==='city'?' in '+city:'')+'...');
 
   try{
-    var wageData = await fetchWage(role, city, locType);
+    var data = await fetchPricing({
+      role: role,
+      location: city,
+      location_type: locType,
+      time_per_task: minPer,
+      tasks_per_day: tasksDay,
+      days_per_month: daysMonth,
+      complexity_premium: cxPremium,
+      complexity_label: cxLabel
+    });
 
     hideStatus();
 
-    var hourly = wageData.hourly_wage;
+    var wage = data.wage;
+    var p = data.pricing;
 
-    // Show wage found
-    document.getElementById('wf-number').textContent = '$'+hourly.toFixed(2);
-    document.getElementById('wf-role').textContent = wageData.role_normalized + (wageData.location_used ? ' — '+wageData.location_used : '');
-    document.getElementById('wf-source').textContent = 'source: '+wageData.source+' (confidence: '+wageData.confidence+')';
+    // Wage card
+    document.getElementById('wf-number').textContent = '$'+wage.hourly.toFixed(2);
+    document.getElementById('wf-role').textContent = wage.role_normalized + (wage.location_used ? ' — '+wage.location_used : '');
+    document.getElementById('wf-source').textContent = 'source: '+wage.source+' (confidence: '+wage.confidence+')';
     revealEl('wage-found');
 
-    // Math
-    var hoursMonth = (minPer / 60) * tasksDay * daysMonth;
-    var monthlySavings = hoursMonth * hourly;
-    var basePrice = monthlySavings * 4;
-    var buildPrice = basePrice * cxMult;
-    var careRaw = monthlySavings * 0.25;
-    var care = Math.max(careRaw, 500);
-    var payback = buildPrice / monthlySavings;
+    // Results
+    document.getElementById('r-build-price').textContent = fmt(p.build_price);
+    document.getElementById('r-monthly').textContent = fmt(p.monthly_savings);
+    document.getElementById('r-monthly-sub').textContent = p.hours_per_month+' hrs × '+fmtDec(wage.hourly)+'/hr';
+    document.getElementById('r-care').textContent = fmt(p.care_fee);
+    document.getElementById('r-payback').textContent = p.payback_months.toFixed(1);
 
-    // Populate results
-    document.getElementById('r-build-price').textContent = fmt(buildPrice);
-    document.getElementById('r-build-sub').textContent = '4× monthly savings × '+cxMult+'× ('+cxLabel+')';
-    document.getElementById('r-monthly').textContent = fmt(monthlySavings);
-    document.getElementById('r-monthly-sub').textContent = Math.round(hoursMonth)+' hrs × '+fmtDec(hourly)+'/hr';
-    document.getElementById('r-care').textContent = fmt(care);
-    document.getElementById('r-payback').textContent = payback.toFixed(1);
-
-    document.getElementById('b-wage').textContent = fmtDec(hourly)+'/hr';
-    document.getElementById('b-hours').textContent = hoursMonth.toFixed(1)+' hrs/month';
-    document.getElementById('b-raw-savings').textContent = fmt(monthlySavings)+'/month';
+    // Breakdown
+    var basePrice = p.monthly_savings * 2;
+    document.getElementById('b-wage').textContent = fmtDec(wage.hourly)+'/hr';
+    document.getElementById('b-hours').textContent = p.hours_per_month+' hrs/month';
+    document.getElementById('b-raw-savings').textContent = fmt(p.monthly_savings)+'/month';
     document.getElementById('b-base').textContent = fmt(basePrice);
-    document.getElementById('b-cx').textContent = cxMult+'× ('+cxLabel+')';
-    document.getElementById('b-final').textContent = fmt(buildPrice);
+    document.getElementById('b-premium').textContent = p.complexity_premium > 0
+      ? fmt(p.premium_amount)+' ('+(p.complexity_premium*100)+'% of savings, '+p.complexity_label+')'
+      : 'none (standard)';
+    document.getElementById('b-final').textContent = fmt(p.build_price);
+    document.getElementById('b-split').textContent = fmt(p.deposit)+' / '+fmt(p.final_payment);
 
-    document.getElementById('vp-hours').innerHTML = 'Frees up <b>'+Math.round(hoursMonth)+' hours a month</b> that were going to manual work.';
-    document.getElementById('vp-payback').innerHTML = 'Pays for itself in <b>'+payback.toFixed(1)+' months</b>, then it\'s pure savings every month after.';
+    document.getElementById('vp-hours').innerHTML = 'Frees up <b>'+Math.round(p.hours_per_month)+' hours a month</b> that were going to repetitive, robotic work.';
+    document.getElementById('vp-payback').innerHTML = 'Pays for itself in <b>'+p.payback_months.toFixed(1)+' months</b>, then it\'s pure savings every month after.';
 
     document.getElementById('calc-timestamp').textContent = 'calculated '+new Date().toLocaleTimeString();
 
@@ -625,7 +595,7 @@ async function runCalc(){
 
   } catch(err){
     showStatus('error','wage lookup failed');
-    showError('Error: '+err.message+'\n\nCheck the role title and try again. If this keeps happening, the API may be rate limited.');
+    showError('Error: '+err.message+'\n\nCheck the role title and try again. If this keeps happening, check the n8n workflow (oCFgd4e2NwR6OUyI) is active.');
   }
 
   btn.disabled = false;
